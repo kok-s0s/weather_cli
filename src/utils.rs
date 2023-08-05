@@ -1,12 +1,7 @@
-use crate::data::CurrentWeather;
-use crate::data::DailyData;
-use crate::data::DailyWeatherResult;
-use crate::data::NowWeatherResult;
-use crate::Secret;
+use crate::data::{CurrentWeather, DailyData, DailyWeatherResult, NowWeatherResult, Secret};
 
 use std::fs::File;
-use std::io::Read;
-use std::io::Write;
+use std::io::{Read, Write};
 use std::path::Path;
 
 const BASE_URL: &str = "https://api.seniverse.com/v3/weather";
@@ -22,19 +17,11 @@ async fn reset_json_file() -> Result<(), Box<dyn std::error::Error>> {
         language: default_language.clone(),
     };
 
-    let json_string: String =
-        serde_json::to_string(&secret_data).expect("JSON serialization failed.");
+    let json_string: String = serde_json::to_string_pretty(&secret_data)?;
 
-    let mut file: File = File::create("secret.json").unwrap_or_else(|err: std::io::Error| {
-        eprintln!("Error creating file: {}", err);
-        File::open("dummy.json").expect("Error opening dummy file")
-    });
-
-    if let Err(err) = file.write_all(json_string.as_bytes()) {
-        eprintln!("Error writing to file: {}", err);
-    } else {
-        println!("Data successfully written to the secret.json file.");
-    }
+    let mut file: File = File::create("secret.json")?;
+    file.write_all(json_string.as_bytes())?;
+    println!("Data successfully written to the secret.json file.");
 
     Ok(())
 }

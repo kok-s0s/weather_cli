@@ -1,11 +1,8 @@
 mod data;
-use data::Secret;
-
 mod utils;
-use utils::read_json_file;
-use utils::show_data;
-use utils::write_json_file;
 
+use crate::data::Secret;
+use crate::utils::{read_json_file, show_data, write_json_file};
 use std::env;
 use std::error::Error;
 
