@@ -14,10 +14,12 @@ const BASE_URL: &str = "https://api.seniverse.com/v3/weather";
 async fn reset_json_file() -> Result<(), Box<dyn std::error::Error>> {
     let default_api_key: String = "SkyWErkPwye-1C6wv".to_string();
     let default_location: String = "汕头".to_string();
+    let default_language: String = "zh-Hans".to_string();
 
     let secret_data: Secret = Secret {
         api_key: default_api_key.clone(),
         location: default_location.clone(),
+        language: default_language.clone(),
     };
 
     let json_string: String =
@@ -68,12 +70,11 @@ pub async fn write_json_file(
 }
 
 async fn get_current_weather(
-    api_key: &str,
-    location: &str,
+    secret: &Secret,
 ) -> Result<CurrentWeather, Box<dyn std::error::Error>> {
     let url: String = format!(
-        "{}/now.json?key={}&location={}&language=zh-Hans&unit=c",
-        BASE_URL, api_key, location
+        "{}/now.json?key={}&location={}&language={}&unit=c",
+        BASE_URL, secret.api_key, secret.location, secret.language
     );
 
     let res: reqwest::Response = reqwest::get(&url).await?;
@@ -102,13 +103,10 @@ async fn get_current_weather(
     Err("Error occurred during weather retrieval".into())
 }
 
-async fn get_future_weather(
-    api_key: &str,
-    location: &str,
-) -> Result<Vec<DailyData>, Box<dyn std::error::Error>> {
+async fn get_future_weather(secret: &Secret) -> Result<Vec<DailyData>, Box<dyn std::error::Error>> {
     let url: String = format!(
-        "{}/daily.json?key={}&location={}&language=zh-Hans&unit=c&start=0&days=3",
-        BASE_URL, api_key, location
+        "{}/daily.json?key={}&location={}&language={}&unit=c&start=0&days=3",
+        BASE_URL, secret.api_key, secret.location, secret.language
     );
 
     let res: reqwest::Response = reqwest::get(&url).await?;
@@ -134,22 +132,38 @@ async fn get_future_weather(
     Err("Error occurred during weather retrieval".into())
 }
 
-pub async fn show_data(api_key: &str, location: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let current_weather: CurrentWeather = get_current_weather(api_key, location).await?;
-    let daily_weather: Vec<DailyData> = get_future_weather(api_key, location).await?;
+pub async fn show_data(secret: &Secret) -> Result<(), Box<dyn std::error::Error>> {
+    let current_weather: CurrentWeather = get_current_weather(secret).await?;
+    let daily_weather: Vec<DailyData> = get_future_weather(secret).await?;
 
-    println!("在{} （￣︶￣）↗", location);
-    println!("现在是{}天", current_weather.text);
-    println!("气温：{}°C", current_weather.temperature);
+    if secret.language == "zh-Hans" {
+        println!("在{} （￣︶￣）↗", secret.location);
+        println!("现在是{}天", current_weather.text);
+        println!("气温：{}°C", current_weather.temperature);
 
-    for daily_data in &daily_weather {
-        println!("-");
-        println!("{}", daily_data.date);
-        println!("----------");
-        println!("白天：{}", daily_data.text_day);
-        println!("夜晚：{}", daily_data.text_night);
-        println!("最高气温：{}°C", daily_data.high);
-        println!("最低气温：{}°C", daily_data.low);
+        for daily_data in &daily_weather {
+            println!("-");
+            println!("{}", daily_data.date);
+            println!("----------");
+            println!("白天：{}", daily_data.text_day);
+            println!("夜晚：{}", daily_data.text_night);
+            println!("最高气温：{}°C", daily_data.high);
+            println!("最低气温：{}°C", daily_data.low);
+        }
+    } else if secret.language == "en" {
+        println!("In {} (￣︶￣)↗", secret.location);
+        println!("Now is {}", current_weather.text);
+        println!("Temperature: {}°C", current_weather.temperature);
+
+        for daily_data in &daily_weather {
+            println!("-");
+            println!("{}", daily_data.date);
+            println!("----------");
+            println!("Day: {}", daily_data.text_day);
+            println!("Night: {}", daily_data.text_night);
+            println!("High: {}°C", daily_data.high);
+            println!("Low: {}°C", daily_data.low);
+        }
     }
 
     Ok(())

@@ -61,4 +61,5 @@ pub struct DailyWeatherResult {
 pub struct Secret {
     pub api_key: String,
     pub location: String,
+    pub language: String,
 }

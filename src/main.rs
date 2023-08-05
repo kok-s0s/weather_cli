@@ -19,7 +19,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     match operation {
         "." => {
-            show_data(&secret.api_key, &secret.location).await?;
+            show_data(&secret).await?;
         }
         "--location" => {
             if args.len() < 3 {
@@ -29,9 +29,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
             secret.location = args[2].clone();
             write_json_file(file_path, &secret).await?;
         }
+        "--language" => {
+            if args.len() < 3 {
+                eprintln!("Error: Missing language argument.");
+                return Ok(());
+            }
+            secret.language = args[2].clone();
+            write_json_file(file_path, &secret).await?;
+        }
         "--help" => {
             println!("Usage:");
             println!("  --location <location> : Set the location in the secret.json file.");
+            println!("  --language <language> : Set the language in the secret.json file.");
             println!("  --help                : Show this help message.");
             println!();
             return Ok(());
