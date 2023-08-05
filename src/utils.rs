@@ -13,8 +13,8 @@ const BASE_URL: &str = "https://api.seniverse.com/v3/weather";
 
 async fn reset_json_file() -> Result<(), Box<dyn std::error::Error>> {
     let default_api_key: String = "SkyWErkPwye-1C6wv".to_string();
-    let default_location: String = "汕头".to_string();
-    let default_language: String = "zh-Hans".to_string();
+    let default_location: String = "ShanTou".to_string();
+    let default_language: String = "en".to_string();
 
     let secret_data: Secret = Secret {
         api_key: default_api_key.clone(),
@@ -48,7 +48,13 @@ pub async fn read_json_file(file_path: &str) -> Result<Secret, Box<dyn std::erro
     let mut contents: String = String::new();
     file.read_to_string(&mut contents)?;
 
-    let secret: Secret = serde_json::from_str(&contents)?;
+    let secret: Secret = match serde_json::from_str(&contents) {
+        Ok(s) => s,
+        Err(_) => {
+            reset_json_file().await?;
+            Secret::default()
+        }
+    };
 
     Ok(secret)
 }
