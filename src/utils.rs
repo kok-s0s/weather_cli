@@ -8,7 +8,7 @@ const BASE_URL: &str = "https://api.seniverse.com/v3/weather";
 
 async fn reset_json_file() -> Result<(), Box<dyn std::error::Error>> {
     let default_api_key: String = "SkyWErkPwye-1C6wv".to_string();
-    let default_location: String = "ShanTou".to_string();
+    let default_location: String = "GuangZhou".to_string();
     let default_language: String = "en".to_string();
 
     let secret_data: Secret = Secret {
@@ -129,33 +129,39 @@ pub async fn show_data(secret: &Secret) -> Result<(), Box<dyn std::error::Error>
     let current_weather: CurrentWeather = get_current_weather(secret).await?;
     let daily_weather: Vec<DailyData> = get_future_weather(secret).await?;
 
+    let loaction_en_to_zh: String = match secret.location.as_str() {
+        "GuangZhou" => "广州".to_string(),
+        "ShenZhen" => "深圳".to_string(),
+        "ShangHai" => "上海".to_string(),
+        "BeiJing" => "北京".to_string(),
+        _ => secret.location.clone(),
+    };
+
     if secret.language == "zh-Hans" {
-        println!("在{} （￣︶￣）↗", secret.location);
-        println!("现在是{}天", current_weather.text);
-        println!("气温：{}°C", current_weather.temperature);
+        print!("{} (￣︶￣)↗ | ", loaction_en_to_zh);
+        print!("{} | ", current_weather.text);
+        println!("{}°C", current_weather.temperature);
 
         for daily_data in &daily_weather {
-            println!("-");
-            println!("{}", daily_data.date);
-            println!("----------");
-            println!("白天：{}", daily_data.text_day);
-            println!("夜晚：{}", daily_data.text_night);
-            println!("最高气温：{}°C", daily_data.high);
-            println!("最低气温：{}°C", daily_data.low);
+            println!("·");
+            print!("{} | ", daily_data.date);
+            print!("白天：{} | ", daily_data.text_day);
+            print!("夜晚：{} | ", daily_data.text_night);
+            print!("{}°C ~ ", daily_data.low);
+            println!("{}°C", daily_data.high);
         }
     } else if secret.language == "en" {
-        println!("In {} (￣︶￣)↗", secret.location);
-        println!("Now is {}", current_weather.text);
-        println!("Temperature: {}°C", current_weather.temperature);
+        print!("{} (￣︶￣)↗ | ", secret.location);
+        print!("{} | ", current_weather.text);
+        println!("{}°C", current_weather.temperature);
 
         for daily_data in &daily_weather {
-            println!("-");
-            println!("{}", daily_data.date);
-            println!("----------");
-            println!("Day: {}", daily_data.text_day);
-            println!("Night: {}", daily_data.text_night);
-            println!("High: {}°C", daily_data.high);
-            println!("Low: {}°C", daily_data.low);
+            println!("·");
+            print!("{} | ", daily_data.date);
+            print!("Day: {} | ", daily_data.text_day);
+            print!("Night: {} | ", daily_data.text_night);
+            print!("{}°C ~ ", daily_data.low);
+            println!("{}°C", daily_data.high);
         }
     }
 

@@ -68,7 +68,7 @@ impl Default for Secret {
     fn default() -> Self {
         Self {
             api_key: "SkyWErkPwye-1C6wv".to_string(),
-            location: "ShanTou".to_string(),
+            location: "GuangZhou".to_string(),
             language: "en".to_string(),
         }
     }

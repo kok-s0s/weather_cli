@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let args: Vec<String> = env::args().collect();
 
-    let mut i = 1;
+    let mut i: usize = 1;
     while i < args.len() {
         match args[i].as_str() {
             "--location" => {
