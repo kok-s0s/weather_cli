@@ -1,11 +1,19 @@
 [package]
-name = "weather_cli"
-version = "0.1.0"
+name = "zero_weather_cli"
+version = "2.0.0"
 edition = "2021"
+authors = ["kok-s0s <kok_s0s@163.com>"]
+license = "MIT"
+description = "A tool to get Weather info"
+readme = "README.md"
+homepage = "https://github.com/kok-s0s/weather_cli"
+repository = "https://github.com/kok-s0s/weather_cli"
+keywords = ["cli", "weather"]
+categories = ["command-line-utilities"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+dirs = "3.0"
 reqwest = { version = "0.10", features = ["blocking", "json"] }
 error-chain = "0.12.4"
 tokio = { version = "0.2.3", features = ["full"] }

@@ -19,7 +19,10 @@ async fn reset_json_file() -> Result<(), Box<dyn std::error::Error>> {
 
     let json_string: String = serde_json::to_string_pretty(&secret_data)?;
 
-    let mut file: File = File::create("secret.json")?;
+    let mut home_dir: std::path::PathBuf = dirs::home_dir().expect("Failed to get home directory");
+    home_dir.push("secret.json");
+
+    let mut file: File = File::create(home_dir)?;
     file.write_all(json_string.as_bytes())?;
     println!("Data successfully written to the secret.json file.");
 
@@ -138,6 +141,7 @@ pub async fn show_data(secret: &Secret) -> Result<(), Box<dyn std::error::Error>
     };
 
     if secret.language == "zh-Hans" {
+        println!();
         print!("{} (￣︶￣)↗ | ", loaction_en_to_zh);
         print!("{} | ", current_weather.text);
         println!("{}°C", current_weather.temperature);
@@ -151,6 +155,7 @@ pub async fn show_data(secret: &Secret) -> Result<(), Box<dyn std::error::Error>
             println!("{}°C", daily_data.high);
         }
     } else if secret.language == "en" {
+        println!();
         print!("{} (￣︶￣)↗ | ", secret.location);
         print!("{} | ", current_weather.text);
         println!("{}°C", current_weather.temperature);
